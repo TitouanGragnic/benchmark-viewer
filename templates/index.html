@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Data Plotter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            background-image: url('{{ url_for('static', filename='holovibes_logo.png') }}');
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload CSV and Choose Plot</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file1" accept=".csv" id="fileInput1">
+        <input type="file" name="file2" accept=".csv" id="fileInput2">
+        <button type="submit" id="submitButton" disabled>Upload CSV</button>
+    </form>
+    
+    <div id="filenameDisplay" class="filename-display"></div>
+
+    {% if data_loaded %}
+        <h2>Choose Plot Type</h2>
+        <a href="{{ url_for('plot', plot_type='fps') }}">FPS Graph</a><br>
+        <a href="{{ url_for('plot', plot_type='throughput') }}">Throughput Graph</a><br>
+        <a href="{{ url_for('plot', plot_type='gpu') }}">GPU Graph</a><br>
+    {% endif %}
+
+    {% if all_data_loaded %}
+        <a href="{{ url_for('plot', plot_type='fps_compare') }}">FPS Compare Graph</a><br>
+        <a href="{{ url_for('plot', plot_type='throughput_compare') }}">Throughput Compare Graph</a><br>
+        <a href="{{ url_for('plot', plot_type='gpu_compare') }}">GPU Compare Graph</a><br>
+    {% endif %}
+
+    <script>
+        // JavaScript to display the names of the selected files and enable the button
+        document.getElementById('fileInput1').addEventListener('change', updateFileDisplay);
+        document.getElementById('fileInput2').addEventListener('change', updateFileDisplay);
+
+        function updateFileDisplay() {
+            var fileInput1 = document.getElementById('fileInput1');
+            var fileInput2 = document.getElementById('fileInput2');
+            var submitButton = document.getElementById('submitButton');
+            var filenameDisplay = document.getElementById('filenameDisplay');
+
+            var filenames = [];
+            if (fileInput1.files.length > 0) {
+                filenames.push('File 1: ' + fileInput1.files[0].name);
+            }
+            if (fileInput2.files.length > 0) {
+                filenames.push('File 2: ' + fileInput2.files[0].name);
+            }
+
+            filenameDisplay.textContent = filenames.length > 0 ? filenames.join(' | ') : 'No files chosen';
+            
+            // Enable button if at least one file is selected
+            if (fileInput1.files.length > 0 || fileInput2.files.length > 0) {
+                submitButton.disabled = false; // Enable button
+                submitButton.classList.add('button-green'); // Add green class
+            } else {
+                submitButton.disabled = true; // Disable button if no files
+                submitButton.classList.remove('button-green'); // Remove green class
+            }
+        }
+    </script>
+
+</body>
+</html>
